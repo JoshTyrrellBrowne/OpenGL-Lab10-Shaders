@@ -34,6 +34,26 @@ void Game::run()
 
 }
 
+std::string Game::loadShader(const std::string t_filePath)
+{
+	std::ifstream file;
+	file.open(((t_filePath).c_str()));
+	std::string  output;
+	std::string line;
+
+	if (file.is_open())
+	{
+		while (!file.eof())
+		{
+			getline(file, line);
+			output.append(line + "\n");
+		}
+	}
+	std::cout << output;
+	
+	return output;
+}
+
 typedef struct
 {
 	float coordinate[3];
@@ -238,20 +258,25 @@ void Game::initialize()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * 36, triangles, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	/* Vertex Shader which would normally be loaded from an external file */
-	const char* vs_src = "#version 400\n\r"
-		"in vec4 sv_position;"
-		"in vec4 sv_color;"
-		"out vec4 color;"
-		"void main() {"
-		"	color = sv_color;"
-		"	gl_Position = sv_position;"
-		"}"; //Vertex Shader Src
+	std::string s = loadShader("vertShader.txt");
+	const char* vertShader_src = s.c_str();
+		//loadShader("vertShader.txt").c_str(); 
+	//std::cout << vertShader_src
+
+	///* Vertex Shader which would normally be loaded from an external file */
+	//const char* vs_src = "#version 400\n\r"
+	//	"in vec4 sv_position;"
+	//	"in vec4 sv_color;"
+	//	"out vec4 color;"
+	//	"void main() {"
+	//	"	color = sv_color;"
+	//	"	gl_Position = sv_position;"
+	//	"}"; //Vertex Shader Src
 
 	DEBUG_MSG("Setting Up Vertex Shader");
 
 	vsid = glCreateShader(GL_VERTEX_SHADER); //Create Shader and set ID
-	glShaderSource(vsid, 1, (const GLchar**)&vs_src, NULL); // Set the shaders source
+	glShaderSource(vsid, 1, (const GLchar**)&vertShader_src, NULL); // Set the shaders source
 	glCompileShader(vsid); //Check that the shader compiles
 
 	//Check is Shader Compiled
@@ -266,18 +291,22 @@ void Game::initialize()
 		DEBUG_MSG("ERROR: Vertex Shader Compilation Error");
 	}
 
+	s = loadShader("fragmentShader.txt");
+	const char* fragmentShader_src = s.c_str();
+
 	/* Fragment Shader which would normally be loaded from an external file */
-	const char* fs_src = "#version 400\n\r"
-		"in vec4 color;"
-		"out vec4 fColor;"
-		"void main() {"
-		"	fColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);"
-		"}"; //Fragment Shader Src
+	//const char* fs_src = "#version 400\n\r"
+	//	"in vec4 color;"
+	//	"out vec4 fColor;"
+	//	"void main() {"
+	//	"	fColor = vec4(1.0f, 0.0f, 2.0f, 1.0f);"
+	//	"}"; //Fragment Shader Src
+
 
 	DEBUG_MSG("Setting Up Fragment Shader");
 
 	fsid = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fsid, 1, (const GLchar**)&fs_src, NULL);
+	glShaderSource(fsid, 1, (const GLchar**)&fragmentShader_src, NULL);
 	glCompileShader(fsid);
 	//Check is Shader Compiled
 	glGetShaderiv(fsid, GL_COMPILE_STATUS, &isCompiled);

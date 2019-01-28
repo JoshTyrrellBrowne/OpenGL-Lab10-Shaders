@@ -12,6 +12,9 @@
 #include <MyVector3.h>
 #include <Matrix3.h>
 
+#include <fstream>
+#include <string>
+
 using namespace std;
 using namespace sf;
 //using namespace gpp;
@@ -22,6 +25,8 @@ public:
 	Game();
 	~Game();
 	void run();
+
+	std::string loadShader(const std::string t_filePath);
 private:
 	Window window;
 	bool isRunning = false;
